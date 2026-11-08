@@ -1,0 +1,44 @@
+{
+  "nodes": {
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1790340521,
+        "narHash": "sha256-cRrWlIjVRJ6BHDr9caUdXsZ3owzWIKYHpNmGPHBInIU=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "f5c082a40f7571c266e74e80ae2e68aadd8a9fc7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "nixpkgs": "nixpkgs",
+        "upstream": "upstream"
+      }
+    },
+    "upstream": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794172898,
+        "narHash": "sha256-aDVxv33q+BPH1YR39QSuD7xCWKxBz3uJ9miGwPW1/Lk=",
+        "owner": "alejandroqh",
+        "repo": "framework-fingerprint-led-blink",
+        "rev": "d7b2f469251bd9f20a814a0116ae6e9e93ed3e76",
+        "type": "github"
+      },
+      "original": {
+        "owner": "alejandroqh",
+        "repo": "framework-fingerprint-led-blink",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
