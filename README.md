@@ -52,7 +52,7 @@ Nothing blinks until fprintd actually asks for a finger: enroll one with
 | option | default | |
 |---|---|---|
 | `enable` | `false` | |
-| `led` | `"chromeos:white:power"` | name under `/sys/class/leds` |
+| `led` | `"chromeos:white:power"` | name under `/sys/class/leds`; falls back to `chromeos:multicolor:power` (older FW13) if missing |
 | `onSeconds` | `0.25` | |
 | `offSeconds` | `0.25` | |
 | `maxBlinkSeconds` | `60` | safety net if a stop signal is missed |

@@ -50,8 +50,10 @@ in
       description = ''
         LED name under /sys/class/leds. The default is the power button
         (which houses the fingerprint reader) on the Framework 16, exposed
-        by the leds_cros_ec driver. It is handed back to the EC with the
-        `chromeos-auto` trigger when blinking stops.
+        by the leds_cros_ec driver. If it does not exist, upstream falls back
+        to `chromeos:multicolor:power` (older Framework 13, Intel 11th-13th
+        gen), lighting only its white channel while blinking. It is handed
+        back to the EC with the `chromeos-auto` trigger when blinking stops.
       '';
     };
 
@@ -81,13 +83,15 @@ in
     # only members may drive the led (see the udev rule below)
     users.groups.fprint-led = { };
 
-    # let group fprint-led write just the trigger and brightness of the led,
-    # so the watcher runs without root (upstream ships the same rule with
-    # /usr/bin paths, which do not exist on nixos)
+    # let group fprint-led write just the trigger, brightness and color
+    # intensity of the led, so the watcher runs without root (upstream ships
+    # the same rule with /usr/bin paths, which do not exist on nixos).
+    # chromeos:multicolor:power is upstream's automatic fallback on older
+    # framework 13 (intel 11th-13th gen), which lack chromeos:white:power.
     services.udev.extraRules = ''
-      ACTION=="add|change", SUBSYSTEM=="leds", KERNEL=="${cfg.led}", \
-        RUN+="${pkgs.coreutils}/bin/chgrp fprint-led /sys%p/trigger /sys%p/brightness", \
-        RUN+="${pkgs.coreutils}/bin/chmod g+w /sys%p/trigger /sys%p/brightness"
+      ACTION=="add|change", SUBSYSTEM=="leds", KERNEL=="${cfg.led}|chromeos:multicolor:power", \
+        RUN+="${pkgs.coreutils}/bin/chgrp fprint-led /sys%p/trigger /sys%p/brightness /sys%p/multi_intensity", \
+        RUN+="${pkgs.coreutils}/bin/chmod g+w /sys%p/trigger /sys%p/brightness /sys%p/multi_intensity"
     '';
 
     systemd.services.framework-fingerprint-led-blink = {
@@ -103,7 +107,8 @@ in
         ExecStart = lib.getExe finalPackage;
         # the script restores the led on SIGTERM itself; this covers SIGKILL
         # and crashes. "-": a missing led must not fail the unit
-        ExecStopPost = "-${pkgs.runtimeShell} -c 'echo chromeos-auto > /sys/class/leds/${cfg.led}/trigger'";
+        # $$ escapes systemd's own variable expansion
+        ExecStopPost = "-${pkgs.runtimeShell} -c 'for l in /sys/class/leds/${cfg.led} /sys/class/leds/chromeos:multicolor:power; do [ -w $$l/trigger ] && echo chromeos-auto > $$l/trigger; done; true'";
         Restart = "on-failure";
         RestartSec = 2;
 
