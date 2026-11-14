@@ -25,11 +25,11 @@
     "upstream": {
       "flake": false,
       "locked": {
-        "lastModified": 1794319846,
-        "narHash": "sha256-cJIZFjjOu0Wze6uXOKbIfARl3BCPdVkuzpAhVh783YU=",
+        "lastModified": 1794679029,
+        "narHash": "sha256-EOk8LhDKZMfDK3pEvCGgLpHTv26wubmZvEzHkFxCGpg=",
         "owner": "alejandroqh",
         "repo": "framework-fingerprint-led-blink",
-        "rev": "487d4b36c9d3f184ace3ccf332557aff9e04bbe1",
+        "rev": "c1f26e7b2b33cc249b3180342a546d3217683c46",
         "type": "github"
       },
       "original": {

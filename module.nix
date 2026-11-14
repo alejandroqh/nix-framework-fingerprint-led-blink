@@ -106,9 +106,10 @@ in
         Type = "simple";
         ExecStart = lib.getExe finalPackage;
         # the script restores the led on SIGTERM itself; this covers SIGKILL
-        # and crashes. "-": a missing led must not fail the unit
+        # and crashes. "-": a missing led must not fail the unit. skip an
+        # already-active trigger: rewriting it flickers the led
         # $$ escapes systemd's own variable expansion
-        ExecStopPost = "-${pkgs.runtimeShell} -c 'for l in /sys/class/leds/${cfg.led} /sys/class/leds/chromeos:multicolor:power; do [ -w $$l/trigger ] && echo chromeos-auto > $$l/trigger; done; true'";
+        ExecStopPost = "-${pkgs.runtimeShell} -c 'for l in /sys/class/leds/${cfg.led} /sys/class/leds/chromeos:multicolor:power; do [ -w $$l/trigger ] && ! ${pkgs.gnugrep}/bin/grep -qF \"[chromeos-auto]\" $$l/trigger && echo chromeos-auto > $$l/trigger; done; true'";
         Restart = "on-failure";
         RestartSec = 2;
 
