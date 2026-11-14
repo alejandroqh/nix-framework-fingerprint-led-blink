@@ -8,7 +8,8 @@ On the Framework 16 the fingerprint reader is inside the power button, but
 nothing tells you when it actually expects a touch. Upstream's small service
 subscribes to fprintd's own signals (`gdbus monitor --dest net.reactivated.Fprint`,
 sender verified by the bus) and blinks `/sys/class/leds/chromeos:white:power`
-while fprintd's `finger-needed` property is `true`, with a 60 s safety timeout.
+while fprintd's `finger-needed` property is `true` and no finger is on the
+sensor yet (`finger-present`), with a 60 s safety timeout.
 The LED is always handed back to the EC (`chromeos-auto` trigger). See upstream
 for the demo and details.
 
@@ -20,17 +21,19 @@ flake input and:
 - ships a NixOS module with an unprivileged, hardened systemd unit
   (`DynamicUser` in group `fprint-led`, no capabilities, private
   network/devices, read-only system, syscall filter) plus a udev rule that lets
-  that group write only the LED's `trigger` and `brightness`
+  that group write only the LED's `trigger`, `brightness` and `multi_intensity`
 
-Tested on a Framework Laptop 16 (Ryzen 9 7940HS, Goodix `27c6:609c`), NixOS
-unstable, kernel 7.3.
+Originally written by [@sophronesis](https://github.com/sophronesis) for the
+first (root) version of upstream and tested on a Framework Laptop 16 (Ryzen 9
+7940HS, Goodix `27c6:609c`), NixOS unstable, kernel 7.3. This fork, kept by
+the upstream maintainer, tracks the current unprivileged version.
 
 ## Usage
 
 ```nix
 # flake.nix
 inputs.nix-framework-fingerprint-led-blink = {
-  url = "github:sophronesis/nix-framework-fingerprint-led-blink";
+  url = "github:alejandroqh/nix-framework-fingerprint-led-blink";
   inputs.nixpkgs.follows = "nixpkgs";
 };
 
@@ -71,7 +74,7 @@ pkgs.framework-fingerprint-led-blink.override {
 }
 ```
 
-or `nix build github:sophronesis/nix-framework-fingerprint-led-blink`.
+or `nix build github:alejandroqh/nix-framework-fingerprint-led-blink`.
 
 ## Testing
 
@@ -113,6 +116,8 @@ nix flake check
 Every substitution in `package.nix` uses `--replace-fail`, so if upstream
 changes one of the patched lines the build breaks instead of silently dropping
 a setting.
+The build also runs upstream's unit tests against the patched script, for
+both the default and the tuned package.
 
 ## License
 

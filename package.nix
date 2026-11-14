@@ -42,6 +42,16 @@ stdenvNoCC.mkDerivation {
   dontConfigure = true;
   dontBuild = true;
 
+  # upstream's unit tests, run against the patched script (mocked gdbus, temp
+  # dir as the led), so a bad substitution or override fails the build
+  doCheck = true;
+  nativeCheckInputs = [ python3 ];
+  checkPhase = ''
+    runHook preCheck
+    python3 -m unittest discover -s tests
+    runHook postCheck
+  '';
+
   postPatch = ''
     substituteInPlace framework-fingerprint-led-blink \
       --replace-fail 'LED = "/sys/class/leds/chromeos:white:power"' \

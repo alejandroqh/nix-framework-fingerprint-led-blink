@@ -1,7 +1,7 @@
 # nixos module: unprivileged, sandboxed service that blinks the power-button
 # led while fprintd waits for a finger (sudo, login, lock screen, polkit,
-# enroll). a udev rule lets group fprint-led write only the led's trigger and
-# brightness; the service runs as a DynamicUser in that group.
+# enroll). a udev rule lets group fprint-led write only the led's trigger,
+# brightness and multi_intensity; the service runs as a DynamicUser in that group.
 #
 #   services.framework-fingerprint-led-blink.enable = true;
 #
